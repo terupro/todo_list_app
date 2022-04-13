@@ -39,7 +39,7 @@ class HomePage extends ConsumerWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _createTask(temp),
+                  _createTask(),
                 ],
               );
             },
@@ -94,7 +94,7 @@ class HomePage extends ConsumerWidget {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _createTask(temp),
+                          _editTask(item),
                         ],
                       );
                     },
@@ -117,8 +117,8 @@ class HomePage extends ConsumerWidget {
     );
   }
 
-  // 新規タスクの作成
-  Widget _createTask(TempTodoItemData temp) {
+  // タスクの作成
+  Widget _createTask() {
     return Consumer(
       builder: ((context, ref, child) {
         // 状態が変化するたびに再ビルドする
@@ -127,26 +127,9 @@ class HomePage extends ConsumerWidget {
         // メソッドや値を取得する
         final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
 
-        // 追加画面を閉じたら再ビルドするために使用する
-        List<TodoItemData> todoItems = _todoNotifierProvider.state.todoItems;
-
-        // todoの一覧を格納するリスト
-        List<Widget> tiles = _buildTodoList(todoItems, _todoNotifierProvider);
-
-        // 入力されたタスクの状態を管理する
-        final _titleProvider = ref.watch(titleProvider);
-        final _titleNotifierProvider = ref.watch(titleProvider.notifier);
-        final _descriptionProvider = ref.watch(descriptionProvider);
-        final _descriptionNotifierProvider =
-            ref.watch(descriptionProvider.notifier);
+        // 日付の表示を管理する
         final _dateProvider = ref.watch(dateProvider);
         final _dateNotifierProvider = ref.watch(dateProvider.notifier);
-
-        // コントローラー
-        final _titleController =
-            TextEditingController(text: _titleNotifierProvider.state);
-        final _descriptionController =
-            TextEditingController(text: _descriptionNotifierProvider.state);
 
         return AlertDialog(
           title: const Text("New Task"),
@@ -157,29 +140,18 @@ class HomePage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextField(
-                      controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: 'タイトル',
                       ),
                       onChanged: (value) {
                         temp = temp.copyWith(title: value);
                       },
-                      onSubmitted: (value) {
-                        value = _titleNotifierProvider.state;
-
-                        temp = temp.copyWith(title: value);
-                      },
                     ),
                     TextField(
-                      controller: _descriptionController,
                       decoration: const InputDecoration(
                         labelText: '説明',
                       ),
                       onChanged: (value) {
-                        temp = temp.copyWith(description: value);
-                      },
-                      onSubmitted: (value) {
-                        value = _titleNotifierProvider.state;
                         temp = temp.copyWith(description: value);
                       },
                     ),
@@ -194,7 +166,104 @@ class HomePage extends ConsumerWidget {
                               showTitleActions: true,
                               minTime: DateTime.now(),
                               onConfirm: (date) {
-                                // 期限を保存するために使います
+                                _dateNotifierProvider.state = date;
+                                temp = temp.copyWith(date: date);
+                              },
+                              currentTime: DateTime.now(),
+                              locale: LocaleType.jp,
+                            );
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Icon(Icons.calendar_today),
+                              const SizedBox(width: 5.0),
+                              Text(
+                                _dateNotifierProvider.state == null
+                                    ? "日付指定"
+                                    : _dateNotifierProvider.state
+                                        .toString()
+                                        .substring(0, 10),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // データの追加
+                            _todoNotifierProvider.writeData(temp);
+                            Navigator.pop(context);
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  // タスクの編集
+  Widget _editTask(TodoItemData item) {
+    return Consumer(
+      builder: ((context, ref, child) {
+        // 状態が変化するたびに再ビルドする
+        final _todoProvider = ref.watch(todoDatabaseProvider);
+
+        // メソッドや値を取得する
+        final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
+
+        // 日付の表示を管理する
+        final _dateProvider = ref.watch(dateProvider);
+        final _dateNotifierProvider = ref.watch(dateProvider.notifier);
+
+        // コントローラー
+        final _titleController = TextEditingController(text: item.title);
+        final _descriptionController =
+            TextEditingController(text: item.description);
+
+        return AlertDialog(
+          title: const Text("Edit Task"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'タイトル',
+                      ),
+                      onChanged: (value) {
+                        temp = temp.copyWith(title: value);
+                      },
+                    ),
+                    TextField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: '説明',
+                      ),
+                      onChanged: (value) {
+                        temp = temp.copyWith(description: value);
+                      },
+                    ),
+                    const SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            DatePicker.showDateTimePicker(
+                              context,
+                              showTitleActions: true,
+                              minTime: DateTime.now(),
+                              onConfirm: (date) {
                                 _dateNotifierProvider.state = date;
                                 temp = temp.copyWith(date: date);
                               },
