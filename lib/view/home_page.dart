@@ -288,8 +288,8 @@ class HomePage extends ConsumerWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            // データの追加
-                            _todoNotifierProvider.writeData(temp);
+                            // データの更新
+                            _todoNotifierProvider.updateData(item);
                             Navigator.pop(context);
                           },
                           child: const Text('OK'),
