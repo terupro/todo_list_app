@@ -59,3 +59,10 @@ final todoDatabaseProvider = StateNotifierProvider((_) {
   notify.readData();
   return notify; // 初期化
 });
+
+// 入力された新規タスクの状態を管理する
+final titleProvider = StateProvider((ref) => '');
+final descriptionProvider = StateProvider((ref) => '');
+final dateProvider = StateProvider<DateTime?>((ref) => null);
+
+
