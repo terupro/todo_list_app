@@ -218,13 +218,9 @@ class HomePage extends ConsumerWidget {
         // メソッドや値を取得する
         final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
 
-        // 日付の表示を管理する
-        final _dateProvider = ref.watch(dateProvider);
-        final _dateNotifierProvider = ref.watch(dateProvider.notifier);
-
         // コントローラー
-        final _titleController = TextEditingController(text: item.title);
-        final _descriptionController =
+        final titleController = TextEditingController(text: item.title);
+        final descriptionController =
             TextEditingController(text: item.description);
 
         return AlertDialog(
@@ -236,7 +232,7 @@ class HomePage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextField(
-                      controller: _titleController,
+                      controller: titleController,
                       decoration: const InputDecoration(
                         labelText: 'タイトル',
                       ),
@@ -245,7 +241,7 @@ class HomePage extends ConsumerWidget {
                       },
                     ),
                     TextField(
-                      controller: _descriptionController,
+                      controller: descriptionController,
                       decoration: const InputDecoration(
                         labelText: '説明',
                       ),
@@ -264,7 +260,6 @@ class HomePage extends ConsumerWidget {
                               showTitleActions: true,
                               minTime: DateTime.now(),
                               onConfirm: (date) {
-                                _dateNotifierProvider.state = date;
                                 temp = temp.copyWith(date: date);
                               },
                               currentTime: DateTime.now(),
@@ -277,18 +272,17 @@ class HomePage extends ConsumerWidget {
                               const Icon(Icons.calendar_today),
                               const SizedBox(width: 5.0),
                               Text(
-                                _dateNotifierProvider.state == null
+                                item.date == null
                                     ? "日付指定"
-                                    : _dateNotifierProvider.state
-                                        .toString()
-                                        .substring(0, 10),
+                                    : item.date.toString().substring(0, 10),
                               ),
                             ],
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // データの更新
+                            await _todoNotifierProvider.writeData(temp);
                             _todoNotifierProvider.updateData(item);
                             Navigator.pop(context);
                           },
