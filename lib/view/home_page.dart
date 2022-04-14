@@ -167,7 +167,6 @@ class HomePage extends ConsumerWidget {
                               minTime: DateTime.now(),
                               onConfirm: (date) {
                                 _dateNotifierProvider.state = date;
-
                                 temp = temp.copyWith(date: date);
                               },
                               currentTime: DateTime.now(),
@@ -180,11 +179,10 @@ class HomePage extends ConsumerWidget {
                               const Icon(Icons.calendar_today),
                               const SizedBox(width: 5.0),
                               Text(
-                                _dateNotifierProvider.state == null
+                                temp.date == null
                                     ? "日付指定"
-                                    : _dateNotifierProvider.state
-                                        .toString()
-                                        .substring(0, 10),
+                                    : DateFormat('M/dd H:mm')
+                                        .format(temp.date!),
                               ),
                             ],
                           ),
@@ -211,7 +209,6 @@ class HomePage extends ConsumerWidget {
 
   // タスクの編集
   Widget _editTask(TodoItemData item) {
-    var edited = item;
     return Consumer(
       builder: ((context, ref, child) {
         // 状態が変化するたびに再ビルドする
@@ -220,10 +217,16 @@ class HomePage extends ConsumerWidget {
         // メソッドや値を取得する
         final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
 
+        // 日付の表示を管理する
+        final _dateProvider = ref.watch(dateProvider);
+        final _dateNotifierProvider = ref.watch(dateProvider.notifier);
+
         // コントローラー
-        final titleController = TextEditingController(text: edited.title);
-        final descriptionController =
-            TextEditingController(text: edited.description);
+        final _titleController = TextEditingController(text: item.title);
+        final _descriptionController =
+            TextEditingController(text: item.description);
+
+        var edited = item;
 
         return AlertDialog(
           title: const Text("Edit Task"),
@@ -234,23 +237,21 @@ class HomePage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextField(
-                      controller: titleController,
+                      controller: _titleController,
                       decoration: const InputDecoration(
                         labelText: 'タイトル',
                       ),
                       onChanged: (value) {
-                        value = edited.title;
-                        temp = temp.copyWith(title: value);
+                        edited = edited.copyWith(title: value);
                       },
                     ),
                     TextField(
-                      controller: descriptionController,
+                      controller: _descriptionController,
                       decoration: const InputDecoration(
                         labelText: '説明',
                       ),
                       onChanged: (value) {
-                        value = edited.description;
-                        temp = temp.copyWith(description: value);
+                        edited = edited.copyWith(description: value);
                       },
                     ),
                     const SizedBox(height: 20.0),
@@ -264,8 +265,7 @@ class HomePage extends ConsumerWidget {
                               showTitleActions: true,
                               minTime: DateTime.now(),
                               onConfirm: (date) {
-                                date = edited.date!;
-                                temp = temp.copyWith(date: date);
+                                edited = edited.copyWith(date: date);
                               },
                               currentTime: DateTime.now(),
                               locale: LocaleType.jp,
@@ -278,8 +278,9 @@ class HomePage extends ConsumerWidget {
                               const SizedBox(width: 5.0),
                               Text(
                                 edited.date == null
-                                    ? "日付指定"
-                                    : edited.date.toString().substring(0, 10),
+                                    ? ""
+                                    : DateFormat('M/dd H:mm')
+                                        .format(edited.date!),
                               ),
                             ],
                           ),
@@ -287,7 +288,6 @@ class HomePage extends ConsumerWidget {
                         ElevatedButton(
                           onPressed: () {
                             // データの更新
-                            _todoNotifierProvider.writeData(temp);
                             _todoNotifierProvider.updateData(edited);
                             Navigator.pop(context);
                           },
