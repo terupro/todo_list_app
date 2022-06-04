@@ -16,16 +16,16 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // 状態が変化するたびに再ビルドする
-    final todoProvider = ref.watch(todoDatabaseProvider);
+    final todoState = ref.watch(todoDatabaseProvider);
 
     // メソッドや値を取得する
-    final todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
+    final todoNotifier = ref.watch(todoDatabaseProvider.notifier);
 
     // 追加画面を閉じたら再ビルドするために使用する
-    List<TodoItemData> todoItems = todoNotifierProvider.state.todoItems;
+    List<TodoItemData> todoItems = todoNotifier.state.todoItems;
 
     // todoの一覧を格納するリスト
-    List<Widget> tiles = _buildTodoList(todoItems, todoNotifierProvider);
+    List<Widget> tiles = _buildTodoList(todoItems, todoNotifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Todo List')),
@@ -122,14 +122,14 @@ class HomePage extends ConsumerWidget {
     return Consumer(
       builder: ((context, ref, child) {
         // 状態が変化するたびに再ビルドする
-        final _todoProvider = ref.watch(todoDatabaseProvider);
+        final todoState = ref.watch(todoDatabaseProvider);
 
         // メソッドや値を取得する
-        final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
+        final todoNotifier = ref.watch(todoDatabaseProvider.notifier);
 
         // 日付の表示を管理する
-        final _dateProvider = ref.watch(dateProvider);
-        final _dateNotifierProvider = ref.watch(dateProvider.notifier);
+        final dateState = ref.watch(dateProvider);
+        final dateNotifier = ref.watch(dateProvider.notifier);
 
         return AlertDialog(
           title: const Text("New Task"),
@@ -166,7 +166,7 @@ class HomePage extends ConsumerWidget {
                               showTitleActions: true,
                               minTime: DateTime.now(),
                               onConfirm: (date) {
-                                _dateNotifierProvider.state = date;
+                                dateNotifier.state = date;
                                 temp = temp.copyWith(date: date);
                               },
                               currentTime: DateTime.now(),
@@ -190,7 +190,7 @@ class HomePage extends ConsumerWidget {
                         ElevatedButton(
                           onPressed: () {
                             // データの追加
-                            _todoNotifierProvider.writeData(temp);
+                            todoNotifier.writeData(temp);
                             Navigator.pop(context);
                           },
                           child: const Text('OK'),
@@ -212,14 +212,14 @@ class HomePage extends ConsumerWidget {
     return Consumer(
       builder: ((context, ref, child) {
         // 状態が変化するたびに再ビルドする
-        final _todoProvider = ref.watch(todoDatabaseProvider);
+        final todoState = ref.watch(todoDatabaseProvider);
 
         // メソッドや値を取得する
-        final _todoNotifierProvider = ref.watch(todoDatabaseProvider.notifier);
+        final todoNotifier = ref.watch(todoDatabaseProvider.notifier);
 
         // 日付の表示を管理する
-        final _dateProvider = ref.watch(dateProvider);
-        final _dateNotifierProvider = ref.watch(dateProvider.notifier);
+        final dateState = ref.watch(dateProvider);
+        final dateNotifier = ref.watch(dateProvider.notifier);
 
         // コントローラー
         final _titleController = TextEditingController(text: item.title);
@@ -288,7 +288,7 @@ class HomePage extends ConsumerWidget {
                         ElevatedButton(
                           onPressed: () {
                             // データの更新
-                            _todoNotifierProvider.updateData(edited);
+                            todoNotifier.updateData(edited);
                             Navigator.pop(context);
                           },
                           child: const Text('OK'),
