@@ -4,10 +4,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:todo_list_app/models/db/db.dart';
-import 'package:todo_list_app/models/freezed/todo.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:todo_list_app/view_models/todo_provider.dart';
+import 'package:todo_list_app/model/db/db.dart';
+import 'package:todo_list_app/model/freezed/todo.dart';
+import 'package:todo_list_app/view_model/todo_notifier.dart';
 
 class HomePage extends ConsumerWidget {
   // 入力中のtodoのインスタンスを作成

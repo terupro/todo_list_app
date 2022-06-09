@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:todo_list_app/models/db/db.dart';
-import 'package:todo_list_app/models/freezed/todo.dart';
+import 'package:todo_list_app/model/db/db.dart';
+import 'package:todo_list_app/model/freezed/todo.dart';
 
 // DBの操作を行うクラス （dbの操作にstateを絡める）
 class TodoDatabaseNotifier extends StateNotifier<TodoStateData> {
@@ -64,5 +64,3 @@ final todoDatabaseProvider = StateNotifierProvider((_) {
 final titleProvider = StateProvider((ref) => '');
 final descriptionProvider = StateProvider((ref) => '');
 final dateProvider = StateProvider<DateTime?>((ref) => null);
-
-

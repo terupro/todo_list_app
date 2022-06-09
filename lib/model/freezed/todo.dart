@@ -1,4 +1,4 @@
-import 'package:todo_list_app/models/db/db.dart';
+import 'package:todo_list_app/model/db/db.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'todo.freezed.dart';
